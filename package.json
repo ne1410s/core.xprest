@@ -1,0 +1,54 @@
+{
+  "name": "@ne1410s/xprest",
+  "version": "0.0.0",
+  "description": "RESTful express core library",
+  "main": "dist/ne14_xprest.cjs.min.js",
+  "module": "dist/ne14_xprest.esm.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "npx rimraf dist",
+    "build": "npm run clean && npx rollup -c",
+    "publish-local": "npm run build && npm pack",
+    "publish-patch": "npm run build && npm version patch && npm publish --access public",
+    "publish-minor": "npm run build && npm version minor && npm publish --access public",
+    "publish-major": "npm run build && npm version major && npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ne1410s/core.xprest.git"
+  },
+  "keywords": [
+    "RESTful",
+    "REST",
+    "Express",
+    "Api",
+    "Xprest"
+  ],
+  "author": "ne1410s <pgj646@gmail.com> (http://ne1410s.co.uk)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ne1410s/core.xprest/issues"
+  },
+  "homepage": "https://github.com/ne1410s/core.xprest#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.6",
+    "@types/ejs": "^3.0.2",
+    "@types/express": "^4.17.6",
+    "@types/node": "^13.11.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.6.1",
+    "rollup-plugin-terser": "^5.3.0",
+    "rollup-plugin-typescript2": "^0.27.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@ne1410s/http": "^0.2.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "ejs": "^3.0.2",
+    "express": "^4.17.1"
+  }
+}
