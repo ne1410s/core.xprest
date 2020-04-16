@@ -1,9 +1,10 @@
 # @ne1410s/xprest
 RESTful Express core library
-## Main Aims
- - To simplify `express` routing for local resources
- - To propagate dynamic rendering capabilities
- - To provide generic RESTful endpoint wrapper for api routing
+## Designed For:
+ - Server-side packages using `express`
+ - Simplifying `express` routing for local resources
+ - Propagating dynamic rendering capabilities
 
-## Notes
- - This is a server side package that targets node, rather than the browser!
+## Not Designed For:
+ - Client-side
+ - Consuming another api (see `@ne1410s/http`)

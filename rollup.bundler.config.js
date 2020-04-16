@@ -6,7 +6,6 @@ import pkg from './package.json';
 export default {
   input: 'src/index.ts',
   external: [
-    '@ne1410s/http',
     'body-parser',
     'cors',
     'ejs',
