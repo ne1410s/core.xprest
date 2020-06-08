@@ -1,22 +1,5 @@
-import typescript from 'rollup-plugin-typescript2';
-import pkg from './package.json';
+import rollup_bundler from './rollup.bundler.config';
 
-// CommonJS and ES module builds
-export default {
-  input: 'src/index.ts',
-  external: [
-    'body-parser',
-    'cors',
-    'ejs',
-    'express',
-    'jws',
-    'path'
-  ],
-  output: [
-    { file: pkg.main, format: 'cjs' },
-    { file: pkg.module, format: 'es' }
-  ],
-  plugins: [
-    typescript()
-  ]
-};
+export default [
+  rollup_bundler
+];
