@@ -5,7 +5,6 @@ import * as ejs from 'ejs';
 import * as path from 'path';
 
 export class Xprest {
-
   private readonly api = express();
 
   constructor() {
@@ -42,7 +41,7 @@ export class Xprest {
   /**
    * Starts listening for the specified requests.
    * @param port The port.
-   * @param onready Called once listening is in place. 
+   * @param onready Called once listening is in place.
    */
   start(port: number, onready?: () => void): void {
     this.api.listen(port, onready);
@@ -55,10 +54,10 @@ export class Xprest {
    * @param handler Handles requests.
    */
   endpoint<TReq, TRes>(
-      apiRoute: string,
-      verb: 'post' | 'get' | 'delete' | 'put',
-      handler: (req: TReq) => TRes): void {
-
+    apiRoute: string,
+    verb: 'post' | 'get' | 'delete' | 'put',
+    handler: (req: TReq) => TRes
+  ): void {
     this.api[verb](apiRoute, (req, res) => {
       const inObject = { ...req.body, ...req.query, ...req.params } as TReq;
       const outObject = handler(inObject);

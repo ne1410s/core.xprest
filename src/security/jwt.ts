@@ -2,21 +2,16 @@ import * as jws from 'jws';
 
 /** A host for issuing json web tokens. */
 export class JwtIssuer {
-
   /** Initialises a new instance of the @see JwtIssuer class. */
-  constructor(
-    private issuer: string,
-    private secret: string,
-    private minutes: number = 15
-  ) {}
+  constructor(private issuer: string, private secret: string, private minutes: number = 15) {}
 
   /** Issues a token containing the supplied payload. */
   public issue<T extends JwtToken>(payload: T): string {
-    this.preparePayload(payload);    
+    this.preparePayload(payload);
     return jws.sign({
       header: { alg: 'HS256' },
       payload,
-      secret: this.secret
+      secret: this.secret,
     });
   }
 
@@ -24,12 +19,12 @@ export class JwtIssuer {
   public parseValid<T extends JwtToken>(token: string): T {
     const now = new Date().getTime() / 1000;
     const payload = this.parseRaw<T>(token);
-    return payload 
-        && (!payload.exp || now < payload.exp)
-        && (!payload.nbf || now >= payload.nbf)
-        && jws.verify(token, 'HS256', this.secret)
+    return payload &&
+      (!payload.exp || now < payload.exp) &&
+      (!payload.nbf || now >= payload.nbf) &&
+      jws.verify(token, 'HS256', this.secret)
       ? payload
-      : null;  
+      : null;
   }
 
   /** Parses the contents of a token. */
@@ -53,7 +48,6 @@ export class JwtIssuer {
 
 /** Standard set of JWT properties. */
 export interface JwtToken {
-
   /** The token issuer. */
   iss?: string;
 
@@ -71,7 +65,7 @@ export interface JwtToken {
 
   /** The start of the expiry window (epoch seconds). */
   nbf?: number;
-  
+
   /** When the token was issued (epoch seconds). */
   iat?: number;
 }
