@@ -17,24 +17,24 @@ export class Xprest {
   /**
    * Specifies a static file resource.
    * @param apiRoute The api route.
-   * @param localPath The local file path.
+   * @param localPath The file path, relative to the cwd.
    */
   resource(apiRoute: string, localPath: string): void {
     this.api['get'](apiRoute, (_req, res) => {
-      res.sendFile(path.resolve(__dirname, localPath));
+      res.sendFile(path.resolve(process.cwd(), localPath));
     });
   }
 
   /**
    * Specifies a dynamic file resource.
    * @param apiRoute The api route.
-   * @param localPath The local file path.
+   * @param localPath The file path, relative to the cwd.
    * @param variables Exposed in the rendering of the file. For example:
    *  <%= new Date().getTime() * myVar.myProp %>
    */
   render(apiRoute: string, localPath: string, variables: object): void {
     this.api['get'](apiRoute, (_req, res) => {
-      res.render(path.resolve(__dirname, localPath), variables);
+      res.render(path.resolve(process.cwd(), localPath), variables);
     });
   }
 
