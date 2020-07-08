@@ -1,7 +1,7 @@
 import { Xprest } from './xprest';
-import { JwtIssuer } from '../security/jwt-issuer';
+import { JwtIssuer, IToken } from '../security/jwt-issuer';
 import { JwtToken } from '../security/jwt-token';
-import { Mdw, PipelineError } from './middleware';
+import { Mdw, PipelineError, PassiveMdw } from './middleware';
 
 export class XprestSecure extends Xprest {
   constructor(private readonly jwtIssuer: JwtIssuer) {
@@ -13,12 +13,12 @@ export class XprestSecure extends Xprest {
    * @param apiRoute The api route.
    * @param localPath The file path, relative to the cwd.
    */
-  resourceSecure<TReq, TRes>(
+  resourceSecure<TReq>(
     apiRoute: string,
     localPath: string,
     roles: string[],
-    mdwPre?: Mdw<TReq, TRes>[],
-    mdwPost?: Mdw<TReq, TRes>[]
+    mdwPre?: PassiveMdw<TReq>[],
+    mdwPost?: PassiveMdw<TReq>[]
   ): void {
     mdwPre.unshift(this.mdw_CheckRole(roles));
     super.resource(apiRoute, localPath, mdwPre, mdwPost);
@@ -31,13 +31,13 @@ export class XprestSecure extends Xprest {
    * @param variables Exposed in the rendering of the file. For example:
    *  <%= new Date().getTime() * myVar.myProp %>
    */
-  renderSecure<TReq, TRes>(
+  renderSecure<TReq>(
     apiRoute: string,
     localPath: string,
     variables: object,
     roles: string[],
-    mdwPre?: Mdw<TReq, TRes>[],
-    mdwPost?: Mdw<TReq, TRes>[]
+    mdwPre?: PassiveMdw<TReq>[],
+    mdwPost?: PassiveMdw<TReq>[]
   ): void {
     mdwPre.unshift(this.mdw_CheckRole(roles));
     super.render(apiRoute, localPath, variables, mdwPre, mdwPost);
@@ -65,20 +65,19 @@ export class XprestSecure extends Xprest {
    * in accordance with the user. Subject (sub) and roles (rol) are suggested.
    * For invalid attempts, a null payload must be returned.
    */
-  authenticate<TReq, TRes>(
+  authenticate<TReq>(
     apiRoute: string,
     payloadFn: (req: TReq) => JwtToken,
-    mdwPre?: Mdw<TReq, TRes>[],
-    mdwPost?: Mdw<TReq, TRes>[]
+    mdwPre?: PassiveMdw<TReq>[],
+    mdwPost?: PassiveMdw<TReq>[]
   ): void {
     const handlers = [this.mdw_IssueToken(payloadFn)];
     if (mdwPre) handlers.unshift(...mdwPre);
     if (mdwPost) handlers.push(...mdwPost);
-
     this.endpoint(apiRoute, 'post', ...handlers);
   }
 
-  private mdw_IssueToken<TReq>(fn: (req: TReq) => JwtToken): Mdw<TReq, any> {
+  private mdw_IssueToken<TReq>(fn: (req: TReq) => JwtToken): Mdw<TReq, IToken> {
     return (sub) => {
       const payload = fn(sub.data);
       if (!payload) throw new PipelineError(401, 'User not recognised');
@@ -86,7 +85,7 @@ export class XprestSecure extends Xprest {
     };
   }
 
-  private mdw_CheckRole<TReq>(roles: string[]): Mdw<TReq, any> {
+  private mdw_CheckRole<TReq>(roles: string[]): PassiveMdw<TReq> {
     const tokenRegex = /^[Bb]earer ([\w-]*\.[\w-]*\.[\w-]*)$/;
     return (sub) => {
       const authz = sub.requestHeaders['authorization'] as string;

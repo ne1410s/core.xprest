@@ -3,7 +3,7 @@ import { JwtToken } from './jwt-token';
 
 /** A host for issuing json web tokens. */
 export class JwtIssuer {
-  /** Initialises a new instance of the @see JwtIssuer class. */
+  /** Initialises a new instance. */
   constructor(private issuer: string, private secret: string, private minutes: number = 15) {}
 
   /** Issues a token containing the supplied payload. */
@@ -45,4 +45,8 @@ export class JwtIssuer {
       payload.exp = date.getTime() / 1000;
     }
   }
+}
+
+export interface IToken {
+  token: string;
 }

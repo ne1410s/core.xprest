@@ -3,7 +3,7 @@ import xp from 'express';
 import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
 import * as path from 'path';
-import { Mdw, MdwIn, PipelineError } from './middleware';
+import { Mdw, MdwIn, PassiveMdw } from './middleware';
 
 export class Xprest {
   private readonly api = xp();
@@ -20,11 +20,11 @@ export class Xprest {
    * @param apiRoute The api route.
    * @param localPath The file path, relative to the cwd.
    */
-  resource<TReq, TRes>(
+  resource<TReq>(
     apiRoute: string,
     localPath: string,
-    mdwPre?: Mdw<TReq, TRes>[],
-    mdwPost?: Mdw<TReq, TRes>[]
+    mdwPre?: PassiveMdw<TReq>[],
+    mdwPost?: PassiveMdw<TReq>[]
   ): void {
     const inner: xp.RequestHandler = (req, res, next) => {
       res.sendFile(path.resolve(process.cwd(), localPath));
@@ -44,12 +44,12 @@ export class Xprest {
    * @param variables Exposed in the rendering of the file. For example:
    *  <%= new Date().getTime() * myVar.myProp %>
    */
-  render<TReq, TRes>(
+  render<TReq>(
     apiRoute: string,
     localPath: string,
     variables: object,
-    mdwPre?: Mdw<TReq, TRes>[],
-    mdwPost?: Mdw<TReq, TRes>[]
+    mdwPre?: PassiveMdw<TReq>[],
+    mdwPost?: PassiveMdw<TReq>[]
   ): void {
     const inner: xp.RequestHandler = (req, res, next) => {
       res.render(path.resolve(process.cwd(), localPath), variables);
