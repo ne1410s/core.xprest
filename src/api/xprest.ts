@@ -16,6 +16,16 @@ export class Xprest {
   }
 
   /**
+   * Applies global middleware. Example uses include providing default headers,
+   * logging, etc.
+   * @param handlers 
+   */
+  global(...handlers: PassiveMdw<any>[]) {
+    const procs = handlers.map((p) => this.convert(p));
+    this.api.use(procs);
+  }
+
+  /**
    * Specifies a static file resource.
    * @param apiRoute The api route.
    * @param localPath The file path, relative to the cwd.
