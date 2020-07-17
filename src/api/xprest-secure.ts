@@ -54,7 +54,7 @@ export class XprestSecure extends Xprest {
     localPath: string,
     mime: string,
     roles: string[],
-    mdwPre?: PassiveMdw<TReq>[],
+    mdwPre?: PassiveMdw<TReq>[]
   ): void {
     mdwPre.unshift(this.mdw_CheckRole(roles));
     super.stream(apiRoute, localPath, mime, mdwPre);

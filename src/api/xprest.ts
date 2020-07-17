@@ -1,11 +1,10 @@
 import cors from 'cors';
 import xp from 'express';
-import { stat } from 'fs/promises';
 import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
 import * as path from 'path';
+import { createReadStream, stat } from 'fs';
 import { Mdw, MdwIn, PassiveMdw } from './middleware';
-import { createReadStream } from 'fs';
 
 export class Xprest {
   private readonly api = xp();
@@ -20,7 +19,7 @@ export class Xprest {
   /**
    * Applies global middleware. Example uses include providing default headers,
    * logging, etc.
-   * @param handlers 
+   * @param handlers
    */
   global(...handlers: PassiveMdw<any>[]) {
     const procs = handlers.map((p) => this.convert(p));
@@ -122,14 +121,14 @@ export class Xprest {
   private xp_Stream(localPath: string, mime: string): xp.RequestHandler {
     const filePath = path.resolve(process.cwd(), localPath);
     return (req, res) => {
-      stat(filePath).then((s) => {
-
-        console.log('file status received!', s);
+      stat(filePath, (err, status) => {
+        console.log('file status received!', status);
 
         res.writeHead(200, {
-          'Content-Length': s.size,
-          'Content-Type': mime
+          'Content-Length': status.size,
+          'Content-Type': mime,
         });
+
         createReadStream(filePath).pipe(res);
       });
     };

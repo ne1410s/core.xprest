@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "noImplicitAny": true,
-    "resolveJsonModule": true,
     "target": "es5",
     "outDir": "dist"
   },
