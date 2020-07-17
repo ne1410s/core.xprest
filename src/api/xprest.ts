@@ -1,9 +1,11 @@
 import cors from 'cors';
 import xp from 'express';
+import { stat } from 'fs/promises';
 import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
 import * as path from 'path';
 import { Mdw, MdwIn, PassiveMdw } from './middleware';
+import { createReadStream } from 'fs';
 
 export class Xprest {
   private readonly api = xp();
@@ -73,6 +75,26 @@ export class Xprest {
   }
 
   /**
+   * Specifies a streamable resource; e.g. video.
+   * @param apiRoute The api route.
+   * @param localPath The file path, relative to the cwd.
+   * @param mime The mime type.
+   */
+  stream<TReq>(
+    apiRoute: string,
+    localPath: string,
+    mime: string,
+    mdwPre?: PassiveMdw<TReq>[]
+  ): void {
+    const inner = this.xp_Stream(localPath, mime);
+
+    const procs = [inner];
+    if (mdwPre) procs.push(...mdwPre.map((p) => this.convert(p)));
+
+    this.api.get(apiRoute, ...procs);
+  }
+
+  /**
    * Specifies a restful api endpoint.
    * @param apiRoute The api route.
    * @param verb The verb.
@@ -94,6 +116,23 @@ export class Xprest {
    */
   start(port: number, onready?: () => void): void {
     this.api.listen(port, onready);
+  }
+
+  /** Provides express pipeline handler for media streaming. */
+  private xp_Stream(localPath: string, mime: string): xp.RequestHandler {
+    const filePath = path.resolve(process.cwd(), localPath);
+    return (req, res) => {
+      stat(filePath).then((s) => {
+
+        console.log('file status received!', s);
+
+        res.writeHead(200, {
+          'Content-Length': s.size,
+          'Content-Type': mime
+        });
+        createReadStream(filePath).pipe(res);
+      });
+    };
   }
 
   /** Converts middleware functions to express-style handlers. */

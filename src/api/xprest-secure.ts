@@ -44,6 +44,23 @@ export class XprestSecure extends Xprest {
   }
 
   /**
+   * Specifies a (secure) streamable resource; e.g. video.
+   * @param apiRoute The api route.
+   * @param localPath The file path, relative to the cwd.
+   * @param mime The mime type.
+   */
+  streamSecure<TReq>(
+    apiRoute: string,
+    localPath: string,
+    mime: string,
+    roles: string[],
+    mdwPre?: PassiveMdw<TReq>[],
+  ): void {
+    mdwPre.unshift(this.mdw_CheckRole(roles));
+    super.stream(apiRoute, localPath, mime, mdwPre);
+  }
+
+  /**
    * Specifies a (secure) restful api endpoint.
    * @param apiRoute The api route.
    * @param verb The verb.
