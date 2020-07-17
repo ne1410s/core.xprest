@@ -122,14 +122,33 @@ export class Xprest {
     const filePath = path.resolve(process.cwd(), localPath);
     return (req, res) => {
       stat(filePath, (err, status) => {
-        console.log('file status received!', status);
+        const range = req.headers.range;
 
-        res.writeHead(200, {
-          'Content-Length': status.size,
-          'Content-Type': mime,
-        });
+        if (range) {
+          console.log('range', range);
 
-        createReadStream(filePath).pipe(res);
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : status.size-1;  
+          const chunksize = (end-start)+1;
+          const file = createReadStream(filePath, {start, end});        
+          res.writeHead(206, {
+            'Content-Range': `bytes ${start}-${end}/${status.size}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': mime,
+          });
+          file.pipe(res);
+
+        } else {
+          console.log('no range :-/');
+
+          res.writeHead(200, {
+            'Content-Length': status.size,
+            'Content-Type': mime,
+          });
+          createReadStream(filePath).pipe(res);
+        }
       });
     };
   }
