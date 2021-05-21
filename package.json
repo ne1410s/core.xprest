@@ -1,6 +1,6 @@
 {
   "name": "@ne1410s/xprest",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "RESTful express core library",
   "main": "dist/ne14_xprest.cjs.min.js",
   "module": "dist/ne14_xprest.esm.min.js",
