@@ -1,6 +1,6 @@
 import cors from 'cors';
 import xp from 'express';
-import * as bodyParser from 'body-parser';
+import { json as parserjson } from 'body-parser';
 import * as ejs from 'ejs';
 import * as path from 'path';
 import { createReadStream, stat } from 'fs';
@@ -11,7 +11,7 @@ export class Xprest {
 
   constructor() {
     this.api.use(cors());
-    this.api.use(bodyParser.json());
+    this.api.use(parserjson);
     this.api.engine('html', ejs.renderFile);
     this.api.engine('js', ejs.renderFile);
   }
